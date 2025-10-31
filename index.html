@@ -1,1 +1,525 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenDonation - Connect to Causes That Matter</title>
+    
+    <!-- 1. Load Tailwind CSS (Modern & Responsive Styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Configure a Warm, Inclusive Theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Using 'blue' for trust/tech and 'amber' for warmth/optimism
+                        primary: tailwind.colors.blue,
+                        secondary: tailwind.colors.amber,
+                        light: tailwind.colors.slate,
+                    },
+                    fontFamily: {
+                        // Using a clean, modern, system-default font stack
+                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif'],
+                    }
+                },
+            },
+        };
+    </script>
+
+    <!-- 3. Add Custom Styles for the Hero Background -->
+    <style>
+        #hero {
+            /* Replace with your high-quality hero image */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1488521787991-ed7b2f28a727?auto=format&fit=crop&w=1740&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-white text-light-700 font-sans">
+
+    <!-- 
+      HEADER & NAVIGATION 
+      - Sticky, transitions from transparent to solid
+      - Includes mobile menu logic
+    -->
+    <header id="main-nav" class="fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <nav class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="#hero" class="text-2xl font-bold text-white transition-colors duration-300" id="logo">
+                    OpenDonation
+                </a>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="nav-link text-white hover:text-secondary-300 font-medium">About</a>
+                    <a href="#mission" class="nav-link text-white hover:text-secondary-300 font-medium">Our Mission</a>
+                    <a href="#features" class="nav-link text-white hover:text-secondary-300 font-medium">Features</a>
+                    <a href="#contact" class="nav-link text-white hover:text-secondary-300 font-medium">Contact</a>
+                    <a href="#get-involved" class="bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-2 px-5 rounded-full shadow-lg transition-transform hover:scale-105">
+                        Donate Now
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-white" aria-label="Open menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobile-menu" class="fixed inset-0 bg-light-900 z-50 hidden flex-col items-center justify-center space-y-8 transition-transform duration-300 md:hidden">
+        <button id="mobile-menu-close" class="absolute top-7 right-6 p-2 text-white" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <a href="#about" class="mobile-nav-link text-white text-3xl font-bold">About</a>
+        <a href="#mission" class="mobile-nav-link text-white text-3xl font-bold">Our Mission</a>
+        <a href="#features" class="mobile-nav-link text-white text-3xl font-bold">Features</a>
+        <a href="#contact" class="mobile-nav-link text-white text-3xl font-bold">Contact</a>
+        <a href="#get-involved" class="mobile-nav-link mt-6 bg-secondary-500 text-black font-bold py-3 px-8 rounded-full text-2xl">
+            Donate Now
+        </a>
+    </div>
+
+    <main>
+        <!-- 
+          HERO SECTION 
+          - Clear, simple, and action-oriented
+        -->
+        <section id="hero" class="h-screen min-h-[600px] flex items-center justify-center text-center text-white">
+            <div class="px-4">
+                <h1 class="text-4xl sm:text-6xl font-extrabold mb-4">
+                    Connect to Causes That Matter
+                </h1>
+                <p class="text-lg sm:text-xl max-w-3xl mx-auto mb-8 text-light-200">
+                    Join a global community dedicated to transparent, impactful giving. Find a cause you love and make a difference today.
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="#get-involved" class="bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-3 px-8 rounded-full text-lg transition-transform hover:scale-105 shadow-lg">
+                        Donate Now
+                    </a>
+                    <a href="#features" class="bg-transparent border-2 border-white hover:bg-white hover:text-black text-white font-bold py-3 px-8 rounded-full text-lg transition-colors">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          ABOUT SECTION
+          - Builds trust and explains the "why"
+        -->
+        <section id="about" class="py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-light-900 mb-6">Welcome to OpenDonation</h2>
+                        <p class="text-lg mb-4">
+                            We're an open-source platform built on the belief that giving should be simple, transparent, and impactful. We connect passionate donors, volunteers, and collaborators with charitable causes, both globally and in their local communities.
+                        </p>
+                        <p class="text-lg">
+                            Our mission is to empower everyone to make a difference. We're not just a platform; we're a community dedicated to building a better world through collective action and open technology.
+                        </p>
+                    </div>
+                    <!-- Visual element to build trust -->
+                    <div class="bg-light-50 p-8 rounded-xl shadow-lg">
+                        <img src="https://placehold.co/600x400/fde68a/333333?text=Our+Global+Community" alt="A diverse group of people collaborating" class="rounded-lg mb-6 shadow-md">
+                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Our Core Values</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Transparency:</strong> See exactly where your contribution goes.</li>
+                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Community:</strong> Join a global network of changemakers.</li>
+                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Impact:</strong> Support verified causes that deliver real results.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          OUR MISSION SECTION
+          - Highlights key goals with icons
+        -->
+        <section id="mission" class="py-24 bg-light-50">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-6">Our Mission</h2>
+                <p class="text-xl text-center max-w-3xl mx-auto mb-16">
+                    To make charitable giving and volunteering accessible to everyone, everywhere, by providing a free, transparent, and open-source platform for good.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Mission 1 -->
+                    <div class="text-center p-6">
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-primary-100 p-4 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c.24 0 .468.02.69.058m-6.9 0c-1.153.09-2.25.36-3.22.772m0 0a9.027 9.027 0 00-4.796 3.06M15.22 3.772a9.027 9.027 0 014.796 3.06M12 3v18" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Empower Communities</h3>
+                        <p>Provide tools for both global causes and local mutual-aid groups to raise funds and find support.</p>
+                    </div>
+                    <!-- Mission 2 -->
+                    <div class="text-center p-6">
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-primary-100 p-4 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Ensure Transparency</h3>
+                        <p>Leverage open-source technology to create a clear path from donation to impact, building unwavering trust.</p>
+                    </div>
+                    <!-- Mission 3 -->
+                    <div class="text-center p-6">
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-primary-100 p-4 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Support All Causes</h3>
+                        <p>From environmental protection and education to disaster relief and healthcare, we support all verified causes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          GET INVOLVED SECTION
+          - The primary Call to Action (CTA) area
+          - Features the functional donation form
+        -->
+        <section id="get-involved" class="py-24 bg-primary-600 text-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Get Involved Today</h2>
+                
+                <div class="grid lg:grid-cols-3 gap-8 items-start">
+                    <!-- Column 1: Donate (The main process) -->
+                    <div class="bg-white text-light-900 p-8 rounded-xl shadow-2xl lg:col-span-2">
+                        <h3 class="text-2xl font-bold mb-6">Make a Secure Donation</h3>
+                        
+                        <div id="donation-toggle" class="flex rounded-lg border border-light-300 p-1 mb-6">
+                            <button class="donation-type-btn flex-1 py-3 px-4 rounded-md font-semibold bg-primary-600 text-white" data-type="one-time">One-Time</button>
+                            <button class="donation-type-btn flex-1 py-3 px-4 rounded-md font-semibold text-light-700" data-type="monthly">Monthly</button>
+                        </div>
+                        
+                        <form action="#" method="POST" class="space-y-4">
+                            <div>
+                                <label for="amount" class="block text-sm font-medium text-light-700">Amount (USD)</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-light-500 sm:text-sm">$</span>
+                                    </div>
+                                    <input type="number" id="amount" name="amount" class="block w-full rounded-md border-light-300 py-3 pl-7 pr-12 focus:border-primary-500 focus:ring-primary-500" placeholder="50.00" required>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="cause" class="block text-sm font-medium text-light-700">Support a Cause</label>
+                                <select id="cause" name="cause" class="mt-1 block w-full rounded-md border-light-300 py-3 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                                    <option value="general">General Fund (Most Needed)</option>
+                                    <option value="environment">Environmental Action</option>
+                                    <option value="education">Education for All</option>
+                                    <option value="disaster-relief">Disaster Relief</option>
+                                    <option value="healthcare">Global Healthcare</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-3 px-6 rounded-lg text-lg transition-transform hover:scale-105 shadow-lg">
+                                Donate Securely
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Column 2: Volunteer & Collaborate -->
+                    <div class="space-y-8">
+                        <div class="bg-primary-700 p-8 rounded-xl shadow-2xl">
+                            <h3 class="text-2xl font-bold mb-4">Volunteer</h3>
+                            <p class="mb-6">Use your skills to make a difference. From coding to marketing, we need your help.</p>
+                            <a href="#" class="bg-white text-primary-600 font-bold py-2 px-5 rounded-full hover:bg-light-100">Find Opportunities</a>
+                        </div>
+                        <div class="bg-primary-700 p-8 rounded-xl shadow-2xl">
+                            <h3 class="text-2xl font-bold mb-4">Collaborate</h3>
+                            <p class="mb-6">Are you an NGO, developer, or corporation? Partner with us to amplify your impact.</p>
+                            <a href="#contact" class="bg-white text-primary-600 font-bold py-2 px-5 rounded-full hover:bg-light-100">Partner With Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          KEY FEATURES SECTION
+          - Reinforces the platform's value
+        -->
+        <section id="features" class="py-24 bg-white">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-16">Why OpenDonation?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Global & Local Reach</h4>
+                        <p>From international NGOs to your local food bank, find and support causes you care about, anywhere.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Total Transparency</h4>
+                        <p>Our open-source model allows for public auditing. Know exactly how our platform operates and where funds go.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Multi-Cause Support</h4>
+                        <p>Support education, environment, healthcare, and more, all from one secure, easy-to-use platform.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Volunteer Matching</h4>
+                        <p>It's not just about money. We connect your skills with organizations that need them most.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Open-Source & Collaborative</h4>
+                        <p>Built by a community, for the community. Anyone can contribute, suggest features, and help us grow.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
+                        <h4 class="text-xl font-semibold text-light-900 mb-2">Secure & Easy</h4>
+                        <p>A seamless, secure donation process ensures your contribution is safe and your experience is frictionless.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          CONTACT SECTION
+          - Functional form with feedback
+        -->
+        <section id="contact" class="py-24 bg-light-50">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-16">Get in Touch</h2>
+                
+                <div class="grid md:grid-cols-2 gap-16">
+                    <!-- Contact Form -->
+                    <div class="bg-white p-8 rounded-xl shadow-2xl">
+                        <form id="contact-form" action="#" method="POST" class="space-y-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-light-700">Full Name</label>
+                                <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-light-700">Email Address</label>
+                                <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-light-700">Message</label>
+                                <textarea id="message" name="message" rows="5" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500"></textarea>
+                            </div>
+                            <button id="contact-submit-btn" type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all shadow-lg">
+                                Send Message
+                            </button>
+                            <p id="contact-success-msg" class="text-center text-green-600 font-medium hidden">Message Sent! Thank you. ✔</p>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info & Socials -->
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-light-900 mb-4">Contact Information</h3>
+                            <p class="text-lg mb-2">
+                                Have questions about partnering, volunteering, or donating? Reach out to us.
+                            </p>
+                            <a href="mailto:contact@opendonation.org" class="text-lg text-primary-600 font-medium hover:underline">
+                                contact@opendonation.org
+                            </a>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-2xl font-semibold text-light-900 mb-4">Follow Us</h3>
+                            <p class="text-lg mb-4">
+                                Join the community conversation and stay updated on our progress.
+                            </p>
+                            <div class="flex space-x-6">
+                                <!-- Social Icons -->
+                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="Twitter">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                                </a>
+                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="GitHub">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.523 2 12 2z" clip-rule="evenodd" /></svg>
+                                </a>
+                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="LinkedIn">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" /></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 
+      FOOTER
+      - Simple, clear, and has all legal links
+    -->
+    <footer id="main-footer" class="bg-light-900 text-light-400">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                <!-- Column 1: Logo & Mission -->
+                <div>
+                    <h5 class="font-bold text-white text-lg mb-3">OpenDonation</h5>
+                    <p class="text-sm">Making a global impact through open-source technology and community action.</p>
+                </div>
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h5 class="font-semibold text-white mb-3">Quick Links</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#about" class="hover:text-white">About Us</a></li>
+                        <li><a href="#mission" class="hover:text-white">Our Mission</a></li>
+                        <li><a href="#get-involved" class="hover:text-white">Donate</a></li>
+                        <li><a href="#contact" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <!-- Column 3: Legal -->
+                <div>
+                    <h5 class="font-semibold text-white mb-3">Legal</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Use</a></li>
+                        <li><a href="#" class="hover:text-white">MIT License</a></li>
+                    </ul>
+                </div>
+                <!-- Column 4: Connect -->
+                <div>
+                    <h5 class="font-semibold text-white mb-3">Connect</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Twitter / X</a></li>
+                        <li><a href="#" class="hover:text-white">GitHub</a></li>
+                        <li><a href="#" class="hover:text-white">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bottom Footer Bar -->
+            <div class="border-t border-light-700 pt-8 text-center text-sm">
+                <p>&copy; 2025 OpenDonation. This is a fictional open-source project. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- 
+      JAVASCRIPT
+      - Placed at the end of the body for faster page load
+      - Handles all interactivity
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- 1. Sticky Navigation Bar Logic ---
+            const nav = document.getElementById('main-nav');
+            const logo = document.getElementById('logo');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    // Scrolled state
+                    nav.classList.add('bg-white', 'shadow-lg');
+                    logo.classList.remove('text-white');
+                    logo.classList.add('text-primary-600');
+                    navLinks.forEach(link => {
+                        link.classList.remove('text-white');
+                        link.classList.add('text-light-700');
+                    });
+                } else {
+                    // Top state
+                    nav.classList.remove('bg-white', 'shadow-lg');
+                    logo.classList.add('text-white');
+                    logo.classList.remove('text-primary-600');
+                    navLinks.forEach(link => {
+                        link.add('text-white');
+                        link.classList.remove('text-light-700');
+                    });
+                }
+            });
+
+            // --- 2. Mobile Menu Toggle Logic ---
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenuCloseBtn = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            
+            const openMenu = () => mobileMenu.classList.remove('hidden');
+            const closeMenu = () => mobileMenu.classList.add('hidden');
+
+            mobileMenuBtn.addEventListener('click', openMenu);
+            mobileMenuCloseBtn.addEventListener('click', closeMenu);
+            // Close menu when a link is clicked (for single-page anchors)
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+
+            // --- 3. Donation Form Toggle Logic ---
+            const donationToggle = document.getElementById('donation-toggle');
+            const donationButtons = donationToggle.querySelectorAll('.donation-type-btn');
+            
+            donationButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent form submission
+                    
+                    // Remove active state from all buttons
+                    donationButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary-600', 'text-white');
+                        btn.classList.add('text-light-700');
+                    });
+                    
+                    // Add active state to the clicked button
+                    button.classList.add('bg-primary-600', 'text-white');
+                    button.classList.remove('text-light-700');
+                });
+            });
+
+            // --- 4. Contact Form Submission Feedback (No Alert) ---
+            const contactForm = document.getElementById('contact-form');
+            const submitButton = document.getElementById('contact-submit-btn');
+            const successMessage = document.getElementById('contact-success-msg');
+
+            contactForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Stop the form from actually submitting
+                
+                // Show success message and disable button
+                submitButton.disabled = true;
+                submitButton.textContent = 'Message Sent! ✔';
+                submitButton.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+                submitButton.classList.add('bg-green-600', 'cursor-not-allowed');
+                
+                // Hide the button and show the text message (Alternative)
+                // submitButton.classList.add('hidden');
+                // successMessage.classList.remove('hidden');
+
+                // Reset form after a delay (optional)
+                setTimeout(() => {
+                    contactForm.reset();
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                    submitButton.classList.add('bg-primary-600', 'hover:bg-primary-700');
+                    submitButton.classList.remove('bg-green-600', 'cursor-not-allowed');
+                }, 4000); 
+            });
+
+        });
+    </script>
+
+</body>
+</html>
