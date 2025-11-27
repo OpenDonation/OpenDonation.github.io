@@ -3,523 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenDonation - Connect to Causes That Matter</title>
+    <title>OpenDonation - Transparent Open Source Giving</title>
     
-    <!-- 1. Load Tailwind CSS (Modern & Responsive Styling) -->
+    <!-- 1. Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. Configure a Warm, Inclusive Theme -->
+    <!-- 2. Configure Theme & Dark Mode -->
     <script>
         tailwind.config = {
+            darkMode: 'class', // Enable manual dark mode toggle
             theme: {
                 extend: {
                     colors: {
-                        // Using 'blue' for trust/tech and 'amber' for warmth/optimism
-                        primary: tailwind.colors.blue,
-                        secondary: tailwind.colors.amber,
-                        light: tailwind.colors.slate,
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // Sky Blue
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            400: '#fb7185',
+                            500: '#f43f5e', // Rose/Coral
+                            600: '#e11d48',
+                        },
+                        // Neutral scales for distinct light/dark themes
+                        light: {
+                            bg: '#ffffff',
+                            text: '#0f172a', // Slate 900
+                            muted: '#475569', // Slate 600
+                        },
+                        dark: {
+                            bg: '#0f172a', // Slate 900
+                            card: '#1e293b', // Slate 800
+                            text: '#f8fafc', // Slate 50
+                            muted: '#94a3b8', // Slate 400
+                        }
                     },
                     fontFamily: {
-                        // Using a clean, modern, system-default font stack
-                        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(14, 165, 233, 0.3)',
                     }
                 },
             },
         };
     </script>
 
-    <!-- 3. Add Custom Styles for the Hero Background -->
     <style>
+        /* Base visibility fixes */
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Hero Background */
         #hero {
-            /* Replace with your high-quality hero image */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1488521787991-ed7b2f28a727?auto=format&fit=crop&w=1740&q=80');
+            /* Dark overlay is baked in to ensure text visibility regardless of theme */
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.7)), 
+                        url('https://images.unsplash.com/photo-1488521787991-ed7b2f28a727?auto=format&fit=crop&w=1740&q=80');
             background-size: cover;
             background-position: center;
         }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-white text-light-700 font-sans">
+<body class="bg-white dark:bg-dark-bg text-light-text dark:text-dark-text font-sans antialiased">
 
-    <!-- 
-      HEADER & NAVIGATION 
-      - Sticky, transitions from transparent to solid
-      - Includes mobile menu logic
-    -->
-    <header id="main-nav" class="fixed w-full top-0 z-50 transition-all duration-300">
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- NAVIGATION -->
+    <header id="main-nav" class="fixed w-full top-0 z-50 transition-all duration-300 border-b border-transparent">
         <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <a href="#hero" class="text-2xl font-bold text-white transition-colors duration-300" id="logo">
-                    OpenDonation
+                <a href="#" onclick="handleRoute(event, '#')" class="flex items-center gap-2 group z-50">
+                    <div class="w-8 h-8 bg-accent-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-glow">O</div>
+                    <!-- Force white text initially for hero contrast, then JS handles scroll color -->
+                    <span class="text-xl font-bold tracking-tight text-white transition-colors duration-300" id="logo-text">OpenDonation</span>
                 </a>
 
-                <!-- Desktop Nav -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#about" class="nav-link text-white hover:text-secondary-300 font-medium">About</a>
-                    <a href="#mission" class="nav-link text-white hover:text-secondary-300 font-medium">Our Mission</a>
-                    <a href="#features" class="nav-link text-white hover:text-secondary-300 font-medium">Features</a>
-                    <a href="#contact" class="nav-link text-white hover:text-secondary-300 font-medium">Contact</a>
-                    <a href="#get-involved" class="bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-2 px-5 rounded-full shadow-lg transition-transform hover:scale-105">
-                        Donate Now
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <!-- Nav Links: White initially, change on scroll -->
+                    <a href="#campaigns" onclick="handleRoute(event, '#campaigns')" class="nav-link text-slate-200 hover:text-white font-medium text-sm transition-colors">Campaigns</a>
+                    <a href="#forum" onclick="handleRoute(event, '#forum')" class="nav-link text-slate-200 hover:text-white font-medium text-sm transition-colors">Forum</a>
+                    <a href="#about" onclick="handleRoute(event, '#about')" class="nav-link text-slate-200 hover:text-white font-medium text-sm transition-colors">About</a>
+                    
+                    <div class="h-4 w-px bg-white/20 transition-colors duration-300" id="nav-divider"></div>
+                    
+                    <!-- Theme Toggle Button -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-full text-slate-200 hover:text-white hover:bg-white/10 transition-all" aria-label="Toggle Theme">
+                        <!-- Sun Icon (Hidden in Dark) -->
+                        <svg id="icon-sun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <!-- Moon Icon (Hidden in Light) -->
+                        <svg id="icon-moon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+
+                    <a href="#donate" onclick="handleRoute(event, '#donate')" class="bg-white text-primary-900 font-bold py-2.5 px-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 text-sm">
+                        Start Giving
                     </a>
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 text-white" aria-label="Open menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
+                <!-- Mobile Toggle -->
+                <button id="mobile-menu-btn" class="md:hidden text-white p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </nav>
         </div>
     </header>
 
-    <!-- Mobile Menu (Hidden by default) -->
-    <div id="mobile-menu" class="fixed inset-0 bg-light-900 z-50 hidden flex-col items-center justify-center space-y-8 transition-transform duration-300 md:hidden">
-        <button id="mobile-menu-close" class="absolute top-7 right-6 p-2 text-white" aria-label="Close menu">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-slate-900/95 backdrop-blur-xl hidden flex-col items-center justify-center gap-8 opacity-0 transition-opacity duration-300">
+        <button id="mobile-menu-close" class="absolute top-6 right-6 text-white p-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
-        <a href="#about" class="mobile-nav-link text-white text-3xl font-bold">About</a>
-        <a href="#mission" class="mobile-nav-link text-white text-3xl font-bold">Our Mission</a>
-        <a href="#features" class="mobile-nav-link text-white text-3xl font-bold">Features</a>
-        <a href="#contact" class="mobile-nav-link text-white text-3xl font-bold">Contact</a>
-        <a href="#get-involved" class="mobile-nav-link mt-6 bg-secondary-500 text-black font-bold py-3 px-8 rounded-full text-2xl">
-            Donate Now
-        </a>
+        <a href="#campaigns" onclick="handleRoute(event, '#campaigns'); closeMobileMenu()" class="text-2xl font-bold text-white hover:text-accent-500">Campaigns</a>
+        <a href="#forum" onclick="handleRoute(event, '#forum'); closeMobileMenu()" class="text-2xl font-bold text-white hover:text-accent-500">Community Forum</a>
+        <a href="#about" onclick="handleRoute(event, '#about'); closeMobileMenu()" class="text-2xl font-bold text-white hover:text-accent-500">Our Mission</a>
+        <button onclick="toggleTheme(); closeMobileMenu()" class="text-xl font-medium text-slate-300 border border-slate-600 px-6 py-2 rounded-full">Switch Theme</button>
+        <a href="#donate" onclick="handleRoute(event, '#donate'); closeMobileMenu()" class="text-2xl font-bold text-accent-500">Donate Now</a>
     </div>
 
-    <main>
-        <!-- 
-          HERO SECTION 
-          - Clear, simple, and action-oriented
-        -->
-        <section id="hero" class="h-screen min-h-[600px] flex items-center justify-center text-center text-white">
-            <div class="px-4">
-                <h1 class="text-4xl sm:text-6xl font-extrabold mb-4">
-                    Connect to Causes That Matter
-                </h1>
-                <p class="text-lg sm:text-xl max-w-3xl mx-auto mb-8 text-light-200">
-                    Join a global community dedicated to transparent, impactful giving. Find a cause you love and make a difference today.
-                </p>
-                <div class="flex justify-center space-x-4">
-                    <a href="#get-involved" class="bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-3 px-8 rounded-full text-lg transition-transform hover:scale-105 shadow-lg">
-                        Donate Now
-                    </a>
-                    <a href="#features" class="bg-transparent border-2 border-white hover:bg-white hover:text-black text-white font-bold py-3 px-8 rounded-full text-lg transition-colors">
-                        Learn More
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- 
-          ABOUT SECTION
-          - Builds trust and explains the "why"
-        -->
-        <section id="about" class="py-24 bg-white">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="grid md:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h2 class="text-3xl md:text-4xl font-bold text-light-900 mb-6">Welcome to OpenDonation</h2>
-                        <p class="text-lg mb-4">
-                            We're an open-source platform built on the belief that giving should be simple, transparent, and impactful. We connect passionate donors, volunteers, and collaborators with charitable causes, both globally and in their local communities.
-                        </p>
-                        <p class="text-lg">
-                            Our mission is to empower everyone to make a difference. We're not just a platform; we're a community dedicated to building a better world through collective action and open technology.
-                        </p>
+    <main id="main-content" class="min-h-screen pt-0">
+        
+        <!-- === VIEW: LANDING PAGE === -->
+        <div id="view-home" class="view-section">
+            
+            <!-- HERO SECTION -->
+            <section id="hero" class="relative pt-32 pb-32 md:pt-48 md:pb-40 overflow-hidden text-white">
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
+                        <span class="w-2 h-2 rounded-full bg-accent-500 animate-pulse"></span>
+                        <span class="text-xs font-bold tracking-wide uppercase text-white shadow-sm">v2.0 Open Source</span>
                     </div>
-                    <!-- Visual element to build trust -->
-                    <div class="bg-light-50 p-8 rounded-xl shadow-lg">
-                        <img src="https://placehold.co/600x400/fde68a/333333?text=Our+Global+Community" alt="A diverse group of people collaborating" class="rounded-lg mb-6 shadow-md">
-                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Our Core Values</h3>
-                        <ul class="space-y-2">
-                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Transparency:</strong> See exactly where your contribution goes.</li>
-                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Community:</strong> Join a global network of changemakers.</li>
-                            <li class="flex items-center"><span class="text-secondary-600 mr-2">&#10004;</span> <strong>Impact:</strong> Support verified causes that deliver real results.</li>
-                        </ul>
+                    
+                    <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight drop-shadow-lg">
+                        Transparency meets <br>
+                        Radical Generosity.
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-slate-200 max-w-2xl mx-auto mb-10 font-medium drop-shadow-md">
+                        The first open-source donation platform where every cent is tracked via public repositories. Join 10,000+ developers and donors changing the world.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="#donate" onclick="handleRoute(event, '#donate')" class="w-full sm:w-auto bg-accent-500 hover:bg-accent-600 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg hover:shadow-accent-500/40">
+                            Make an Impact
+                        </a>
+                        <a href="https://github.com/OpenDonation" target="_blank" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.48 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.523 2 12 2z" clip-rule="evenodd" /></svg>
+                            Star on GitHub
+                        </a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 
-          OUR MISSION SECTION
-          - Highlights key goals with icons
-        -->
-        <section id="mission" class="py-24 bg-light-50">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-6">Our Mission</h2>
-                <p class="text-xl text-center max-w-3xl mx-auto mb-16">
-                    To make charitable giving and volunteering accessible to everyone, everywhere, by providing a free, transparent, and open-source platform for good.
-                </p>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Mission 1 -->
-                    <div class="text-center p-6">
-                        <div class="flex justify-center items-center mb-4">
-                            <div class="bg-primary-100 p-4 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c.24 0 .468.02.69.058m-6.9 0c-1.153.09-2.25.36-3.22.772m0 0a9.027 9.027 0 00-4.796 3.06M15.22 3.772a9.027 9.027 0 014.796 3.06M12 3v18" />
-                                </svg>
-                            </div>
+            <!-- CAMPAIGNS SECTION -->
+            <section id="campaigns" class="py-24 bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+                <div class="container mx-auto px-4 max-w-7xl">
+                    <div class="flex justify-between items-end mb-12">
+                        <div>
+                            <h2 class="text-3xl font-bold text-light-text dark:text-dark-text">Live Campaigns</h2>
+                            <p class="text-light-muted dark:text-dark-muted mt-2">Real-time data from our open ledger.</p>
                         </div>
-                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Empower Communities</h3>
-                        <p>Provide tools for both global causes and local mutual-aid groups to raise funds and find support.</p>
+                        <a href="#" onclick="showToast('Loading Archive...')" class="hidden sm:inline-block text-primary-500 font-semibold hover:underline">View Archived &rarr;</a>
                     </div>
-                    <!-- Mission 2 -->
-                    <div class="text-center p-6">
-                        <div class="flex justify-center items-center mb-4">
-                            <div class="bg-primary-100 p-4 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Ensure Transparency</h3>
-                        <p>Leverage open-source technology to create a clear path from donation to impact, building unwavering trust.</p>
-                    </div>
-                    <!-- Mission 3 -->
-                    <div class="text-center p-6">
-                        <div class="flex justify-center items-center mb-4">
-                            <div class="bg-primary-100 p-4 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-primary-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl font-semibold text-light-900 mb-2">Support All Causes</h3>
-                        <p>From environmental protection and education to disaster relief and healthcare, we support all verified causes.</p>
+
+                    <div class="grid md:grid-cols-3 gap-8" id="campaign-grid">
+                        <!-- Content injected via JS -->
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 
-          GET INVOLVED SECTION
-          - The primary Call to Action (CTA) area
-          - Features the functional donation form
-        -->
-        <section id="get-involved" class="py-24 bg-primary-600 text-white">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Get Involved Today</h2>
-                
-                <div class="grid lg:grid-cols-3 gap-8 items-start">
-                    <!-- Column 1: Donate (The main process) -->
-                    <div class="bg-white text-light-900 p-8 rounded-xl shadow-2xl lg:col-span-2">
-                        <h3 class="text-2xl font-bold mb-6">Make a Secure Donation</h3>
+            <!-- STATS STRIP -->
+            <section class="bg-slate-900 py-16 text-white border-y border-slate-800">
+                <div class="container mx-auto px-4 max-w-7xl">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-700">
+                        <div>
+                            <div class="text-4xl font-bold text-accent-500 mb-1">$4.2M</div>
+                            <div class="text-sm text-slate-400">Total Raised</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-bold text-primary-500 mb-1">100%</div>
+                            <div class="text-sm text-slate-400">Transparency</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-bold text-white mb-1">12k</div>
+                            <div class="text-sm text-slate-400">Contributors</div>
+                        </div>
+                        <div>
+                            <div class="text-4xl font-bold text-emerald-400 mb-1">89</div>
+                            <div class="text-sm text-slate-400">Countries Served</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DONATION SECTION -->
+            <section id="donate" class="py-24 bg-white dark:bg-dark-bg transition-colors duration-300">
+                <div class="container mx-auto px-4 max-w-5xl">
+                    <div class="bg-gradient-to-br from-primary-900 to-slate-900 rounded-3xl p-8 md:p-16 shadow-2xl text-white relative overflow-hidden ring-1 ring-white/10">
+                        <!-- Background decoration -->
+                        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-accent-500 rounded-full blur-[100px] opacity-30"></div>
                         
-                        <div id="donation-toggle" class="flex rounded-lg border border-light-300 p-1 mb-6">
-                            <button class="donation-type-btn flex-1 py-3 px-4 rounded-md font-semibold bg-primary-600 text-white" data-type="one-time">One-Time</button>
-                            <button class="donation-type-btn flex-1 py-3 px-4 rounded-md font-semibold text-light-700" data-type="monthly">Monthly</button>
-                        </div>
-                        
-                        <form action="#" method="POST" class="space-y-4">
+                        <div class="relative z-10 grid md:grid-cols-2 gap-12 items-center">
                             <div>
-                                <label for="amount" class="block text-sm font-medium text-light-700">Amount (USD)</label>
-                                <div class="mt-1 relative rounded-md shadow-sm">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-light-500 sm:text-sm">$</span>
-                                    </div>
-                                    <input type="number" id="amount" name="amount" class="block w-full rounded-md border-light-300 py-3 pl-7 pr-12 focus:border-primary-500 focus:ring-primary-500" placeholder="50.00" required>
+                                <h2 class="text-3xl font-bold mb-6">Invest in the Future</h2>
+                                <p class="text-slate-300 mb-8 font-medium">Select a preset amount or enter your own. 100% of direct donations go to the cause.</p>
+                                
+                                <ul class="space-y-4 mb-8">
+                                    <li class="flex items-center gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+                                        <span class="text-sm text-slate-200">Tax Deductible Receipt</span>
+                                    </li>
+                                    <li class="flex items-center gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+                                        <span class="text-sm text-slate-200">Monthly Impact Report</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-inner">
+                                <div class="flex gap-2 mb-6 bg-black/40 p-1 rounded-lg">
+                                    <button onclick="toggleDonateFreq(this, 'once')" class="donate-freq-btn flex-1 py-2 rounded-md text-sm font-semibold bg-white text-primary-900 shadow-sm transition-all">Give Once</button>
+                                    <button onclick="toggleDonateFreq(this, 'monthly')" class="donate-freq-btn flex-1 py-2 rounded-md text-sm font-semibold text-slate-300 hover:text-white transition-all">Monthly</button>
                                 </div>
-                            </div>
-                            
-                            <div>
-                                <label for="cause" class="block text-sm font-medium text-light-700">Support a Cause</label>
-                                <select id="cause" name="cause" class="mt-1 block w-full rounded-md border-light-300 py-3 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-                                    <option value="general">General Fund (Most Needed)</option>
-                                    <option value="environment">Environmental Action</option>
-                                    <option value="education">Education for All</option>
-                                    <option value="disaster-relief">Disaster Relief</option>
-                                    <option value="healthcare">Global Healthcare</option>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-secondary-500 hover:bg-secondary-600 text-black font-bold py-3 px-6 rounded-lg text-lg transition-transform hover:scale-105 shadow-lg">
-                                Donate Securely
-                            </button>
-                        </form>
-                    </div>
+                                
+                                <div class="grid grid-cols-3 gap-3 mb-4">
+                                    <button onclick="selectAmount(25)" class="amount-btn py-3 border border-white/20 rounded-xl hover:bg-white/10 transition-colors font-bold text-white">$25</button>
+                                    <button onclick="selectAmount(50)" class="amount-btn py-3 border-accent-500 bg-accent-500/20 text-accent-400 rounded-xl font-bold ring-2 ring-accent-500">$50</button>
+                                    <button onclick="selectAmount(100)" class="amount-btn py-3 border border-white/20 rounded-xl hover:bg-white/10 transition-colors font-bold text-white">$100</button>
+                                </div>
 
-                    <!-- Column 2: Volunteer & Collaborate -->
-                    <div class="space-y-8">
-                        <div class="bg-primary-700 p-8 rounded-xl shadow-2xl">
-                            <h3 class="text-2xl font-bold mb-4">Volunteer</h3>
-                            <p class="mb-6">Use your skills to make a difference. From coding to marketing, we need your help.</p>
-                            <a href="#" class="bg-white text-primary-600 font-bold py-2 px-5 rounded-full hover:bg-light-100">Find Opportunities</a>
-                        </div>
-                        <div class="bg-primary-700 p-8 rounded-xl shadow-2xl">
-                            <h3 class="text-2xl font-bold mb-4">Collaborate</h3>
-                            <p class="mb-6">Are you an NGO, developer, or corporation? Partner with us to amplify your impact.</p>
-                            <a href="#contact" class="bg-white text-primary-600 font-bold py-2 px-5 rounded-full hover:bg-light-100">Partner With Us</a>
+                                <input type="number" placeholder="Custom Amount" class="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500 mb-6 font-medium" id="custom-amount">
+                                
+                                <button onclick="processDonation()" class="w-full bg-accent-500 hover:bg-accent-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-accent-500/30 transition-all active:scale-95">
+                                    Complete Donation
+                                </button>
+                                <p class="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                                    Secure SSL Encryption
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 
-          KEY FEATURES SECTION
-          - Reinforces the platform's value
-        -->
-        <section id="features" class="py-24 bg-white">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-16">Why OpenDonation?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Global & Local Reach</h4>
-                        <p>From international NGOs to your local food bank, find and support causes you care about, anywhere.</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Total Transparency</h4>
-                        <p>Our open-source model allows for public auditing. Know exactly how our platform operates and where funds go.</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Multi-Cause Support</h4>
-                        <p>Support education, environment, healthcare, and more, all from one secure, easy-to-use platform.</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Volunteer Matching</h4>
-                        <p>It's not just about money. We connect your skills with organizations that need them most.</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Open-Source & Collaborative</h4>
-                        <p>Built by a community, for the community. Anyone can contribute, suggest features, and help us grow.</p>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-lg border border-light-100">
-                        <h4 class="text-xl font-semibold text-light-900 mb-2">Secure & Easy</h4>
-                        <p>A seamless, secure donation process ensures your contribution is safe and your experience is frictionless.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div> <!-- END VIEW: HOME -->
 
-        <!-- 
-          CONTACT SECTION
-          - Functional form with feedback
-        -->
-        <section id="contact" class="py-24 bg-light-50">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-light-900 text-center mb-16">Get in Touch</h2>
-                
-                <div class="grid md:grid-cols-2 gap-16">
-                    <!-- Contact Form -->
-                    <div class="bg-white p-8 rounded-xl shadow-2xl">
-                        <form id="contact-form" action="#" method="POST" class="space-y-4">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-light-700">Full Name</label>
-                                <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-light-700">Email Address</label>
-                                <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-                            </div>
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-light-700">Message</label>
-                                <textarea id="message" name="message" rows="5" required class="mt-1 block w-full rounded-md border-light-300 py-3 px-4 shadow-sm focus:border-primary-500 focus:ring-primary-500"></textarea>
-                            </div>
-                            <button id="contact-submit-btn" type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-all shadow-lg">
-                                Send Message
-                            </button>
-                            <p id="contact-success-msg" class="text-center text-green-600 font-medium hidden">Message Sent! Thank you. ✔</p>
-                        </form>
-                    </div>
-
-                    <!-- Contact Info & Socials -->
-                    <div class="space-y-8">
+        <!-- === VIEW: FORUM === -->
+        <div id="view-forum" class="view-section hidden bg-light-bg dark:bg-dark-bg min-h-screen transition-colors duration-300">
+            <div class="bg-slate-900 text-white pb-20 pt-28">
+                <div class="container mx-auto px-4 max-w-7xl">
+                    <div class="flex flex-col md:flex-row justify-between items-end gap-6">
                         <div>
-                            <h3 class="text-2xl font-semibold text-light-900 mb-4">Contact Information</h3>
-                            <p class="text-lg mb-2">
-                                Have questions about partnering, volunteering, or donating? Reach out to us.
-                            </p>
-                            <a href="mailto:contact@opendonation.org" class="text-lg text-primary-600 font-medium hover:underline">
-                                contact@opendonation.org
-                            </a>
+                            <h2 class="text-4xl font-bold mb-2">Community Hub</h2>
+                            <p class="text-slate-400 font-medium">Discuss projects, propose features, and coordinate volunteers.</p>
+                        </div>
+                        <button onclick="showToast('Opens Thread Composer')" class="bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2 shadow-lg">
+                            <span class="text-xl">+</span> New Discussion
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 max-w-7xl -mt-10 relative z-10">
+                <div class="grid lg:grid-cols-4 gap-8">
+                    <!-- Sidebar (Categories) -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-white dark:bg-dark-card rounded-xl shadow-lg p-4 border border-slate-200 dark:border-slate-700 transition-colors">
+                            <h3 class="font-bold text-light-text dark:text-dark-text mb-4 px-2">Categories</h3>
+                            <nav class="space-y-1" id="forum-categories">
+                                <!-- Injected via JS -->
+                            </nav>
                         </div>
                         
-                        <div>
-                            <h3 class="text-2xl font-semibold text-light-900 mb-4">Follow Us</h3>
-                            <p class="text-lg mb-4">
-                                Join the community conversation and stay updated on our progress.
-                            </p>
-                            <div class="flex space-x-6">
-                                <!-- Social Icons -->
-                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="Twitter">
-                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                                </a>
-                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="GitHub">
-                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.523 2 12 2z" clip-rule="evenodd" /></svg>
-                                </a>
-                                <a href="#" class="text-light-500 hover:text-primary-600" aria-label="LinkedIn">
-                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" /></svg>
-                                </a>
-                            </div>
+                        <div class="bg-gradient-to-br from-primary-600 to-slate-900 rounded-xl shadow-lg p-6 text-white border border-white/10">
+                            <h3 class="font-bold mb-2">Dev Contributors</h3>
+                            <p class="text-sm opacity-90 mb-4">Join our Discord to chat with core maintainers.</p>
+                            <button onclick="window.open('https://github.com/OpenDonation')" class="w-full bg-white/20 hover:bg-white/30 text-white text-sm font-bold py-2 rounded-lg transition-colors border border-white/20">
+                                View GitHub
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Main Content (Threads) -->
+                    <div class="lg:col-span-3">
+                        <div id="forum-main-content" class="bg-white dark:bg-dark-card rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 min-h-[500px] transition-colors">
+                            <!-- Content injected via JS -->
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div> <!-- END VIEW: FORUM -->
+
     </main>
 
-    <!-- 
-      FOOTER
-      - Simple, clear, and has all legal links
-    -->
-    <footer id="main-footer" class="bg-light-900 text-light-400">
-        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-                <!-- Column 1: Logo & Mission -->
-                <div>
-                    <h5 class="font-bold text-white text-lg mb-3">OpenDonation</h5>
-                    <p class="text-sm">Making a global impact through open-source technology and community action.</p>
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 py-12">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-700 rounded flex items-center justify-center text-white text-xs font-bold">OD</div>
+                    <span class="font-semibold text-white">OpenDonation</span>
                 </div>
-                <!-- Column 2: Quick Links -->
-                <div>
-                    <h5 class="font-semibold text-white mb-3">Quick Links</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#about" class="hover:text-white">About Us</a></li>
-                        <li><a href="#mission" class="hover:text-white">Our Mission</a></li>
-                        <li><a href="#get-involved" class="hover:text-white">Donate</a></li>
-                        <li><a href="#contact" class="hover:text-white">Contact</a></li>
-                    </ul>
+                
+                <div class="flex gap-8 text-sm font-medium">
+                    <a href="https://github.com/OpenDonation" class="hover:text-white transition-colors">GitHub Repository</a>
+                    <a href="#" onclick="showToast('Opening License...')" class="hover:text-white transition-colors">MIT License</a>
+                    <a href="#" onclick="showToast('Contact Support...')" class="hover:text-white transition-colors">Support</a>
                 </div>
-                <!-- Column 3: Legal -->
-                <div>
-                    <h5 class="font-semibold text-white mb-3">Legal</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white">Terms of Use</a></li>
-                        <li><a href="#" class="hover:text-white">MIT License</a></li>
-                    </ul>
+                
+                <div class="text-xs">
+                    &copy; 2025 OpenDonation. Open Source.
                 </div>
-                <!-- Column 4: Connect -->
-                <div>
-                    <h5 class="font-semibold text-white mb-3">Connect</h5>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white">Twitter / X</a></li>
-                        <li><a href="#" class="hover:text-white">GitHub</a></li>
-                        <li><a href="#" class="hover:text-white">LinkedIn</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Bottom Footer Bar -->
-            <div class="border-t border-light-700 pt-8 text-center text-sm">
-                <p>&copy; 2025 OpenDonation. This is a fictional open-source project. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-
-    <!-- 
-      JAVASCRIPT
-      - Placed at the end of the body for faster page load
-      - Handles all interactivity
-    -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // --- DATA: CAMPAIGNS ---
+        const campaigns = [
+            {
+                id: 1,
+                title: "Clean Water for Turkana",
+                org: "WaterLife Foundation",
+                raised: 12500,
+                goal: 15000,
+                donors: 342,
+                image: "https://images.unsplash.com/photo-1538300342682-cf57afb97285?auto=format&fit=crop&w=800&q=80",
+                tags: ["Infrastructure", "Health"]
+            },
+            {
+                id: 2,
+                title: "Laptops for Rural Schools",
+                org: "EdTech Global",
+                raised: 4200,
+                goal: 10000,
+                donors: 115,
+                image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
+                tags: ["Education", "Tech"]
+            },
+            {
+                id: 3,
+                title: "Amazon Reforestation",
+                org: "Green Earth",
+                raised: 22000,
+                goal: 20000,
+                donors: 890,
+                image: "https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=800&q=80",
+                tags: ["Environment", "Urgent"]
+            }
+        ];
+
+        // --- DATA: FORUM ---
+        const forumCategories = [
+            { id: 'all', name: 'All Discussions', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+            { id: 'general', name: 'General Chat', icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' },
+            { id: 'projects', name: 'Project Ideas', icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
+            { id: 'tech', name: 'Engineering', icon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4' },
+        ];
+
+        const forumThreads = [
+            { id: 1, cat: 'general', title: "Introductions! Say hello here 👋", author: "SarahAdmin", replies: 45, views: 1205, time: "2h ago", hot: true },
+            { id: 2, cat: 'tech', title: "Improving payment gateway latency in v2.1", author: "DevDave", replies: 12, views: 340, time: "5h ago", hot: false },
+            { id: 3, cat: 'projects', title: "Proposal: Food Bank geo-locator map", author: "CommunityUser", replies: 8, views: 210, time: "1d ago", hot: false },
+            { id: 4, cat: 'general', title: "Monthly transparency report - October", author: "CoreTeam", replies: 23, views: 890, time: "2d ago", hot: true },
+        ];
+
+        // --- APP STATE & INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCampaigns();
+            renderForumCategories();
+            handleRoute(null, window.location.hash || '#');
+            setupScrollListener();
             
-            // --- 1. Sticky Navigation Bar Logic ---
-            const nav = document.getElementById('main-nav');
-            const logo = document.getElementById('logo');
-            const navLinks = document.querySelectorAll('.nav-link');
-
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    // Scrolled state
-                    nav.classList.add('bg-white', 'shadow-lg');
-                    logo.classList.remove('text-white');
-                    logo.classList.add('text-primary-600');
-                    navLinks.forEach(link => {
-                        link.classList.remove('text-white');
-                        link.classList.add('text-light-700');
-                    });
-                } else {
-                    // Top state
-                    nav.classList.remove('bg-white', 'shadow-lg');
-                    logo.classList.add('text-white');
-                    logo.classList.remove('text-primary-600');
-                    navLinks.forEach(link => {
-                        link.add('text-white');
-                        link.classList.remove('text-light-700');
-                    });
-                }
-            });
-
-            // --- 2. Mobile Menu Toggle Logic ---
-            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-            const mobileMenuCloseBtn = document.getElementById('mobile-menu-close');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-            
-            const openMenu = () => mobileMenu.classList.remove('hidden');
-            const closeMenu = () => mobileMenu.classList.add('hidden');
-
-            mobileMenuBtn.addEventListener('click', openMenu);
-            mobileMenuCloseBtn.addEventListener('click', closeMenu);
-            // Close menu when a link is clicked (for single-page anchors)
-            mobileNavLinks.forEach(link => {
-                link.addEventListener('click', closeMenu);
-            });
-
-            // --- 3. Donation Form Toggle Logic ---
-            const donationToggle = document.getElementById('donation-toggle');
-            const donationButtons = donationToggle.querySelectorAll('.donation-type-btn');
-            
-            donationButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault(); // Prevent form submission
-                    
-                    // Remove active state from all buttons
-                    donationButtons.forEach(btn => {
-                        btn.classList.remove('bg-primary-600', 'text-white');
-                        btn.classList.add('text-light-700');
-                    });
-                    
-                    // Add active state to the clicked button
-                    button.classList.add('bg-primary-600', 'text-white');
-                    button.classList.remove('text-light-700');
-                });
-            });
-
-            // --- 4. Contact Form Submission Feedback (No Alert) ---
-            const contactForm = document.getElementById('contact-form');
-            const submitButton = document.getElementById('contact-submit-btn');
-            const successMessage = document.getElementById('contact-success-msg');
-
-            contactForm.addEventListener('submit', function (e) {
-                e.preventDefault(); // Stop the form from actually submitting
-                
-                // Show success message and disable button
-                submitButton.disabled = true;
-                submitButton.textContent = 'Message Sent! ✔';
-                submitButton.classList.remove('bg-primary-600', 'hover:bg-primary-700');
-                submitButton.classList.add('bg-green-600', 'cursor-not-allowed');
-                
-                // Hide the button and show the text message (Alternative)
-                // submitButton.classList.add('hidden');
-                // successMessage.classList.remove('hidden');
-
-                // Reset form after a delay (optional)
-                setTimeout(() => {
-                    contactForm.reset();
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Send Message';
-                    submitButton.classList.add('bg-primary-600', 'hover:bg-primary-700');
-                    submitButton.classList.remove('bg-green-600', 'cursor-not-allowed');
-                }, 4000); 
-            });
-
+            // Initial Theme Check
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         });
-    </script>
 
+        // --- THEME TOGGLE LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            // Trigger scroll handler to update navbar colors if needed
+            handleScroll();
+        }
+
+        // --- ROUTING SYSTEM ---
+        function handleRoute(e, hash) {
+            if (e) e.preventDefault();
+            const route = hash === '' || hash === '#' ? '#home' : hash;
+            history.pushState(null, null, route);
+            
+            const viewHome = document.getElementById('view-home');
+            const viewForum = document.getElementById('view-forum');
+            const nav = document.getElementById('main-nav');
+
+            if (route.startsWith('#forum')) {
+                viewHome.classList.add('hidden');
+                viewForum.classList.remove('hidden');
+                nav.classList.add('bg-slate-900', 'border-slate-800');
+                renderForumThreads('all');
+                window.scrollTo(0,0);
+            } else {
+                viewHome.classList.remove('hidden');
+                viewForum.classList.add('hidden');
+                handleScroll(); 
+                if (route !== '#home') {
+                    const target = document.querySelector(route);
+                    if (target) {
+                        setTimeout(() => {
+                            const offsetPosition = target.getBoundingClientRect().top + window.pageYOffset - 80;
+                            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                        }, 10);
+                    } else {
+                        window.scrollTo(0,0);
+                    }
+                } else {
+                    window.scrollTo(0,0);
+                }
+            }
+        }
+
+        // --- RENDERING ---
+        function renderCampaigns() {
+            const container = document.getElementById('campaign-grid');
+            container.innerHTML = campaigns.map(c => {
+                const percent = Math.min(100, Math.round((c.raised / c.goal) * 100));
+                return `
+                    <div class="group bg-white dark:bg-dark-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 dark:border-slate-700 flex flex-col h-full">
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${c.image}" alt="${c.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute top-3 right-3 flex gap-2">
+                                ${c.tags.map(t => `<span class="px-2 py-1 bg-black/60 backdrop-blur-md text-white text-xs font-bold rounded-md">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="text-xs font-bold text-accent-500 mb-1 uppercase tracking-wide">${c.org}</div>
+                            <h3 class="text-xl font-bold text-light-text dark:text-dark-text mb-3 group-hover:text-primary-500 transition-colors">${c.title}</h3>
+                            
+                            <div class="mt-auto">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-bold text-light-text dark:text-dark-text">$${c.raised.toLocaleString()}</span>
+                                    <span class="text-light-muted dark:text-dark-muted">of $${c.goal.toLocaleString()}</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mb-4 overflow-hidden">
+                                    <div class="bg-gradient-to-r from-primary-500 to-accent-500 h-2 rounded-full" style="width: ${percent}%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex -space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 border-2 border-white dark:border-dark-card"></div>
+                                        <div class="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-500 border-2 border-white dark:border-dark-card"></div>
+                                        <div class="w-8 h-8 rounded-full bg-slate-400 dark:bg-slate-400 border-2 border-white dark:border-dark-card flex items-center justify-center text-[10px] text-white font-bold">+${c.donors}</div>
+                                    </div>
+                                    <button onclick="handleRoute(event, '#donate')" class="text-primary-600 dark:text-primary-400 font-bold text-sm hover:underline">Donate &rarr;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderForumCategories() {
+            const nav = document.getElementById('forum-categories');
+            nav.innerHTML = forumCategories.map(cat => `
+                <button onclick="renderForumThreads('${cat.id}')" class="w-full text-left px-4 py-3 rounded-lg flex items-center gap-3 text-light-muted dark:text-dark-muted hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${cat.icon}"></path></svg>
+                    <span class="font-medium">${cat.name}</span>
+                </button>
+            `).join('');
+        }
+
+        function renderForumThreads(filterId) {
+            const container = document.getElementById('forum-main-content');
+            const filtered = filterId === 'all' ? forumThreads : forumThreads.filter(t => t.cat === filterId);
+            
+            let html = `
+                <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                    <h3 class="font-bold text-lg capitalize text-light-text dark:text-dark-text">${filterId === 'all' ? 'All Discussions' : filterId}</h3>
+                    <div class="flex gap-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Sort By:</span>
+                        <button class="text-xs font-bold text-primary-600 dark:text-primary-400">Newest</button>
+                    </div>
+                </div>
+                <div class="divide-y divide-slate-100 dark:divide-slate-700">
+            `;
+
+            if (filtered.length === 0) {
+                html += `<div class="p-12 text-center text-slate-400">No threads found.</div>`;
+            } else {
+                html += filtered.map(t => `
+                    <div class="p-6 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group cursor-pointer" onclick="showToast('Viewing Thread #${t.id}')">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex-shrink-0"></div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    ${t.hot ? `<span class="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold uppercase rounded-full">Hot</span>` : ''}
+                                    <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold uppercase rounded-full">${t.cat}</span>
+                                </div>
+                                <h4 class="text-lg font-bold text-light-text dark:text-dark-text group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1">${t.title}</h4>
+                                <div class="text-sm text-light-muted dark:text-dark-muted flex gap-4">
+                                    <span>by <span class="font-semibold text-slate-700 dark:text-slate-300">${t.author}</span></span>
+                                    <span>• ${t.time}</span>
+                                </div>
+                            </div>
+                            <div class="text-center hidden sm:block">
+                                <div class="text-xl font-bold text-slate-700 dark:text-slate-300">${t.replies}</div>
+                                <div class="text-xs text-slate-400">Replies</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- INTERACTION LOGIC ---
+        function toggleDonateFreq(btn, type) {
+            document.querySelectorAll('.donate-freq-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-primary-900', 'shadow-sm');
+                b.classList.add('text-slate-300', 'hover:text-white');
+            });
+            btn.classList.remove('text-slate-300', 'hover:text-white');
+            btn.classList.add('bg-white', 'text-primary-900', 'shadow-sm');
+        }
+
+        function selectAmount(amount) {
+            document.getElementById('custom-amount').value = amount;
+        }
+
+        function processDonation() {
+            const amount = document.getElementById('custom-amount').value;
+            if (!amount || amount <= 0) {
+                showToast("Please enter a valid amount!", "error");
+                return;
+            }
+            showToast(`Processing $${amount} donation... (Mock)`, "success");
+            setTimeout(() => {
+                showToast("Thank you! Receipt sent to email.", "success");
+                document.getElementById('custom-amount').value = '';
+            }, 1500);
+        }
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bgClass = "bg-slate-800 dark:bg-slate-700";
+            let icon = "ℹ️";
+            if (type === "success") { bgClass = "bg-emerald-500"; icon = "✅"; }
+            if (type === "error") { bgClass = "bg-red-500"; icon = "⚠️"; }
+
+            toast.className = `${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto`;
+            toast.innerHTML = `<span class="text-lg">${icon}</span> <span class="font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Navbar Scroll Logic with Theme Support
+        function setupScrollListener() {
+            window.addEventListener('scroll', handleScroll);
+        }
+
+        function handleScroll() {
+            const nav = document.getElementById('main-nav');
+            const logoText = document.getElementById('logo-text');
+            const divider = document.getElementById('nav-divider');
+            
+            if (!document.getElementById('view-forum').classList.contains('hidden')) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            if (window.scrollY > 50) {
+                // Scrolled State
+                if (isDark) {
+                    nav.classList.add('bg-slate-900/95', 'border-slate-800');
+                    nav.classList.remove('bg-white/95');
+                } else {
+                    nav.classList.add('bg-white/95', 'border-slate-200');
+                    nav.classList.remove('bg-slate-900/95');
+                }
+                nav.classList.add('backdrop-blur-md', 'shadow-sm');
+                nav.classList.remove('bg-transparent', 'border-transparent');
+                
+                logoText.classList.remove('text-white');
+                logoText.classList.add(isDark ? 'text-white' : 'text-slate-900');
+                divider.classList.remove('bg-white/20');
+                divider.classList.add(isDark ? 'bg-slate-700' : 'bg-slate-200');
+                
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.remove('text-slate-200', 'hover:text-white');
+                    l.classList.add(isDark ? 'text-slate-300' : 'text-slate-600');
+                    l.classList.add(isDark ? 'hover:text-white' : 'hover:text-primary-600');
+                });
+            } else {
+                // Top State (Transparent)
+                nav.classList.remove('bg-white/95', 'bg-slate-900/95', 'backdrop-blur-md', 'shadow-sm', 'border-slate-200', 'border-slate-800');
+                nav.classList.add('bg-transparent', 'border-transparent');
+                
+                logoText.classList.add('text-white');
+                logoText.classList.remove('text-slate-900');
+                divider.classList.add('bg-white/20');
+                divider.classList.remove('bg-slate-200', 'bg-slate-700');
+                
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.add('text-slate-200', 'hover:text-white');
+                    l.classList.remove('text-slate-600', 'hover:text-primary-600', 'text-slate-300');
+                });
+            }
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.remove('hidden');
+            requestAnimationFrame(() => menu.classList.remove('opacity-0'));
+        });
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.add('opacity-0');
+            setTimeout(() => menu.classList.add('hidden'), 300);
+        }
+        document.getElementById('mobile-menu-close').addEventListener('click', closeMobileMenu);
+
+    </script>
 </body>
 </html>
