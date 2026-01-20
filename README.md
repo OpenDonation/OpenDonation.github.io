@@ -16,7 +16,7 @@
   [![Tech Stack](https://img.shields.io/badge/Tech-Tailwind%20%7C%20Alpine-blueviolet.svg)]()
   [![Impact](https://img.shields.io/badge/Impact-High-red.svg)]()
 
-  [View Live Demo](#) · [Report Bug](https://github.com/opendonation/issues) · [Request Feature](https://github.com/opendonation/issues)
+  [View Live Demo](https://opendonation.github.io) · [Report Bug](https://github.com/OpenDonation/OpenDonation.github.io/issues) 
 </div>
 
 ---
