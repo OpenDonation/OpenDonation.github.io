@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Donation | For The Voiceless</title>
+    <title>Open Donation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,12 +12,6 @@
         html { scroll-behavior: smooth; }
         .fade-enter-active, .fade-leave-active { transition: opacity 1.5s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
-        
-        /* Custom Razorpay Form Styling Wrapper */
-        .razorpay-container form {
-            display: flex;
-            justify-content: center;
-        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans" 
@@ -39,11 +33,9 @@
             <i data-lucide="heart-handshake" class="text-emerald-400"></i>
             <span class="font-bold text-xl tracking-tight">Open Donation</span>
         </div>
-        <div class="flex gap-6 text-sm font-semibold tracking-wide drop-shadow-lg hidden md:flex">
-            <a href="#lucy" class="hover:text-emerald-300 transition">Mission</a>
-            <a href="#lucy" class="hover:text-emerald-300 transition">Lucy's Legacy</a>
-            <a href="#donate" class="bg-white text-stone-900 px-4 py-2 rounded-full hover:bg-emerald-400 transition">Donate Now</a>
-        </div>
+        <a href="https://github.com/opendonation" target="_blank" class="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold text-lg transition border border-white/20">
+                    <i data-lucide="github" class="w-5 h-5"></i> GitHub
+                </a>
     </nav>
 
     <header class="relative h-screen flex items-center justify-center overflow-hidden bg-black">
@@ -66,75 +58,24 @@
                 For the <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Innocent.</span>
             </h1>
             <p class="text-xl text-stone-200 mb-10 max-w-2xl mx-auto font-light">
-                We distribute 100% of funds to feed, heal, and house animals. 
-                <br><span class="font-semibold text-white">They feel everything we do.</span>
-            </p>
+  We use 100% of funds to feed, heal, and protect all living beings.
+  <br><span class="font-semibold text-white">Because every living being deserves care and dignity.</span>
+
+</p>
+
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a href="#donate" class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-full font-bold text-lg transition shadow-lg shadow-emerald-900/20">
-                    Donate Funds (INR)
-                </a>
-                <a href="https://github.com/opendonation" target="_blank" class="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-8 py-4 rounded-full font-bold text-lg transition border border-white/20">
-                    <i data-lucide="github" class="w-5 h-5"></i> GitHub
-                </a>
+               
+                <form>
+                    <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_S0krU8isVaOPYV" async></script> 
+                </form>
+
+                
             </div>
         </div>
     </header>
 
-    <section id="lucy" class="py-20 px-6 bg-stone-100">
-        <div class="max-w-5xl mx-auto">
-            <div class="bg-white p-8 md:p-12 rounded-3xl shadow-xl flex flex-col md:flex-row items-center gap-12 border border-stone-200">
-                
-                <div class="w-full md:w-5/12 relative group">
-                    <div class="absolute -inset-2 bg-emerald-100 rounded-2xl blur-xl opacity-70 group-hover:opacity-100 transition"></div>
-                    <img src="lucy.jpg" alt="Lucy" 
-                         class="relative w-full aspect-square object-cover rounded-2xl shadow-lg rotate-2 group-hover:rotate-0 transition duration-500"
-                         onerror="this.src='https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80'"> 
-                </div>
-
-                <div class="w-full md:w-7/12">
-                    <h2 class="text-4xl font-bold text-stone-800 mb-4">LUCY - More Than Just a Cat</h2>
-                    <h3 class="text-lg text-emerald-600 font-semibold mb-6 uppercase tracking-wide">In Loving Memory</h3>
-                    <p class="text-stone-600 text-lg leading-relaxed mb-6">
-                        This project honors our dear <strong>Lucy</strong>, a small soul with a love too big for words.
-                    </p>
-                    <p class="text-stone-600 text-lg leading-relaxed mb-8">
-                        Her absence leaves a permanent gap. We now collect donations to ensure no animal goes hungry or thirsty. All funds go directly to those in need, through us or trusted shelters in India. 
-                    </p>
-                    <div class="flex gap-6 text-stone-400">
-                        <i data-lucide="cat" class="w-8 h-8 hover:text-emerald-500 transition"></i>
-                        <i data-lucide="bird" class="w-8 h-8 hover:text-emerald-500 transition"></i>
-                        <i data-lucide="dog" class="w-8 h-8 hover:text-emerald-500 transition"></i>
-                        <i data-lucide="fish" class="w-8 h-8 hover:text-emerald-500 transition"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="donate" class="py-24 px-6 bg-stone-900 text-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-900/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="absolute bottom-0 left-0 w-72 h-72 bg-teal-900/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-
-        <div class="max-w-xl mx-auto relative z-10 text-center">
-            <h2 class="text-3xl font-bold mb-4">Show Some Love</h2>
-            <p class="text-stone-400 mb-8">Your contribution directly helps an animal in need.</p>
-            
-            <div class="bg-stone-800/50 backdrop-blur-md p-10 rounded-3xl border border-stone-700 shadow-2xl razorpay-container">
-                <form>
-                    <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_S0krU8isVaOPYV" async></script> 
-                </form>
-                <p class="text-xs text-stone-500 mt-6">Secure payment processed by Razorpay India</p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-stone-950 text-stone-600 py-12 text-center border-t border-stone-900">
-        <div class="flex justify-center items-center gap-2 mb-4">
-             <i data-lucide="paw-print" class="w-5 h-5 text-emerald-600"></i>
-             <span class="font-bold text-stone-400">Open Donation</span>
-        </div>
-        <p class="text-sm">&copy; 2026. Open Source. Developed BY <a target="_blank" href="https://pawanbishnoi.com">Pawan Bishnoi</a></p>
-    </footer>
+    
+    
 
     <script>
         lucide.createIcons();
